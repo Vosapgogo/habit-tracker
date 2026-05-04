@@ -2,12 +2,12 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 from pages.components.bottom_nav import BottomNav
-from pages.components.fab import FABButton
-from pages.components.goal_card import GoalCard
-from pages.components.habit_card import HabitsCard
-from pages.components.progress_card import ProgressCard
-from pages.components.section_header import SectionHeader
-from pages.components.modal import NewHabitModal
+from .components.fab import FABButton
+from .components.goal_card import GoalCard
+from .components.habit_card import HabitsCard
+from .components.progress_card import ProgressCard
+from .components.section_header import SectionHeader
+from .components.modal import NewHabitModal
 
 from pages.utils.helpers import *
 from pages.constants import *
@@ -27,13 +27,15 @@ GOALS = [
 
 TODAY = datetime.date.today()
 
-class App(QMainWindow):
+class HomePage(QMainWindow):
     NAV_H = 56
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Habit Tracker")
         self.setFixedSize(390, 780)
+
+        self.user = None
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -121,11 +123,12 @@ class App(QMainWindow):
         hello_prefix = QLabel("Hello, ")
         hello_prefix.setFont(QFont("Helvetica Neue", 26, QFont.Bold))
         hello_prefix.setStyleSheet(f"color: {TEXT_D}; background: transparent;")
-        hello_name = QLabel("Susy!")
-        hello_name.setFont(QFont("Helvetica Neue", 26, QFont.Bold))
-        hello_name.setStyleSheet(f"color: {ORANGE}; background: transparent;")
+        name = self.user.get("name", "User") if self.user else "User"
+        self.hello_name = QLabel(name + "!")
+        self.hello_name.setFont(QFont("Helvetica Neue", 26, QFont.Bold))
+        self.hello_name.setStyleSheet(f"color: {ORANGE}; background: transparent;")
         hello_row.addWidget(hello_prefix)
-        hello_row.addWidget(hello_name)
+        hello_row.addWidget(self.hello_name)
         hello_row.addStretch()
         layout.addLayout(hello_row)
 
@@ -162,6 +165,12 @@ class App(QMainWindow):
         # Spacer at bottom for FAB clearance
         layout.addSpacing(80)
         layout.addStretch()
+
+    def set_user(self, session: dict):
+        self.user = session
+        self._build_page()
+
+        # update habits/goals (optional future improvement)
 
     def _open_modal(self):
         self.modal = NewHabitModal(self, on_save=self._on_modal_save)
