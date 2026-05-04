@@ -1,15 +1,9 @@
 import sys
 from PySide6.QtWidgets import QApplication
-
-from pages.home_p import App
-from models.manager import load_data  
+from pages.app import App
 
 if __name__ == "__main__":
-    data = load_data()
-
-    app = QApplication(sys.argv)
-
-    window = App()
+    app = QApplication(sys.argv)  # ← завжди створюємо першим
+    window = App()                # ← App сам перевіряє сесію в _startup()
     window.show()
-
     sys.exit(app.exec())
