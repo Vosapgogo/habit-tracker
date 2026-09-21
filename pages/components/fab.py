@@ -1,14 +1,14 @@
-from PySide6.QtWidgets import *
-from PySide6.QtGui import *
-from PySide6.QtCore import *
-from pages.constants import *
-from pages.utils.helpers import * 
+from PySide6.QtWidgets import QPushButton, QGraphicsDropShadowEffect
+from PySide6.QtGui import QFont, QColor
+from PySide6.QtCore import Qt
+from pages.constants import APP_FONT, WHITE
+
 
 class FABButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__("+", parent)
         self.setFixedSize(56, 56)
-        self.setFont(QFont("Helvetica Neue", 26, QFont.Bold))
+        self.setFont(QFont(APP_FONT, 26, QFont.Bold))
         self.setCursor(Qt.PointingHandCursor)
         self.setStyleSheet(f"""
             QPushButton {{
