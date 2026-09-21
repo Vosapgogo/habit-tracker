@@ -1,18 +1,32 @@
-from PySide6.QtWidgets import *
-from PySide6.QtGui import *
-from PySide6.QtCore import *
-from pages.constants import *
-from pages.utils.helpers import * 
+from PySide6.QtWidgets import QWidget, QSizePolicy
+from PySide6.QtGui import QFont, QColor, QPainter, QPen
+from PySide6.QtCore import Qt, QRect
+from pages.constants import APP_FONT, ORANGE, WHITE
+from pages.utils.helpers import rounded_rect_path
+
+import models.user_session as user_session
+
 
 class ProgressCard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedHeight(120)
+        self.habits = []
+        self.setMinimumHeight(120)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+    def set_habits(self, habits: list):
+        self.habits = habits
+        self.update()
 
     def paintEvent(self, event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
+
+        total = len(self.habits)
+        done = sum(1 for h in self.habits if h.get("done"))
+        pct = done / total if total > 0 else 0.0
+        pct_text = f"{int(pct * 100)}%"
+        label_text = f"{done} of {total} habits"
 
         # Card background
         path = rounded_rect_path(self.rect(), 18)
@@ -27,29 +41,39 @@ class ProgressCard(QWidget):
 
         rect_arc = QRect(cx - rad, cy - rad, rad * 2, rad * 2)
 
-        # Background arc
+        # Background
         p.setPen(pen_bg)
         p.drawArc(rect_arc, 90 * 16, -360 * 16)
 
-        # Progress arc (70%)
+        # Progress
         p.setPen(pen_fg)
-        p.drawArc(rect_arc, 90 * 16, -int(360 * 0.70) * 16)
+        p.drawArc(rect_arc, 90 * 16, -int(360 * pct) * 16)
 
-        # Center text "70%"
+        # Center text
         p.setPen(QColor(WHITE))
-        f_pct = QFont("Helvetica Neue", 17, QFont.Bold)
+        f_pct = QFont(APP_FONT, 17, QFont.Bold)
         p.setFont(f_pct)
-        p.drawText(QRect(cx - rad, cy - 14, rad * 2, 28), Qt.AlignCenter, "70%")
+        p.drawText(QRect(cx - rad, cy - 14, rad * 2, 28), Qt.AlignCenter, pct_text)
 
         # Right side text
-        f_bold = QFont("Helvetica Neue", 15, QFont.Bold)
+        f_bold = QFont(APP_FONT, 15, QFont.Bold)
         p.setFont(f_bold)
         p.setPen(QColor(WHITE))
-        p.drawText(QRect(140, 30, 200, 28), Qt.AlignLeft | Qt.AlignVCenter, "3 of 5 habits")
+        metrics_bold = p.fontMetrics()
+        max_width = self.width() - 150
+        elided_label = metrics_bold.elidedText(label_text, Qt.ElideRight, max_width)
 
-        f_small = QFont("Helvetica Neue", 11)
+        p.drawText(
+            QRect(140, 30, max_width, 28), Qt.AlignLeft | Qt.AlignVCenter, elided_label
+        )
+
+        f_small = QFont(APP_FONT, 11)
         p.setFont(f_small)
         p.setPen(QColor("#FFE0CC"))
-        p.drawText(QRect(140, 58, 200, 24), Qt.AlignLeft | Qt.AlignVCenter, "completed today!")
+        p.drawText(
+            QRect(140, 58, max_width, 24),
+            Qt.AlignLeft | Qt.AlignVCenter,
+            "completed today!",
+        )
 
         p.end()
