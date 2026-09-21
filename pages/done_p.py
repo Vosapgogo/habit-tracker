@@ -1,9 +1,15 @@
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton
-)
-from PySide6.QtCore import Qt, Signal, QTimer, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QFont
-from .constants import ORANGE, TEXT_D, TEXT_M, BG, ORANGE_L
+import os
+
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont, QPixmap
+
+from .constants import APP_FONT, TEXT_D, TEXT_M, BG
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+img_path = os.path.join(BASE_DIR, "images", "done.png")
+
+from pages.components.primary_button import PrimaryButton
 
 
 class DonePage(QWidget):
@@ -12,72 +18,56 @@ class DonePage(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet(f"background: {BG};")
-        self._build_ui()
+        self._build()
 
-    def _build_ui(self):
+    def _build(self):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignCenter)
-        layout.setContentsMargins(40, 60, 40, 60)
+        layout.setContentsMargins(40, 30, 40, 60)
         layout.setSpacing(0)
 
         layout.addStretch()
 
-        # ── Illustration - document + checkmark ──────────────────────
-        icon_container = QLabel()
-        icon_container.setAlignment(Qt.AlignCenter)
-        icon_container.setFixedHeight(180)
-        icon_container.setStyleSheet(f"""
-            QLabel {{
-                font-size: 100px;
-                background: transparent;
-                border: none;
-            }}
-        """)
-        icon_container.setText("📋")
-        layout.addWidget(icon_container, alignment=Qt.AlignCenter)
+        # Illustration
+        logo_label = QLabel()
+        pixmap = QPixmap(img_path)
+        scaled = pixmap.scaled(300, 180, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        logo_label.setPixmap(scaled)
+        logo_label.setAlignment(Qt.AlignCenter)
+        logo_label.setStyleSheet("background: transparent;")
+        layout.addWidget(logo_label)
 
-        # Green checkmark badge
-        check_lbl = QLabel("✓")
-        check_lbl.setAlignment(Qt.AlignCenter)
-        check_lbl.setFixedSize(48, 48)
-        check_lbl.setFont(QFont("", 22, QFont.Bold))
-        check_lbl.setStyleSheet("""
-            QLabel {
-                background: #4CAF7D;
-                color: white;
-                border-radius: 24px;
-                border: 3px solid white;
-            }
-        """)
-        layout.addWidget(check_lbl, alignment=Qt.AlignCenter)
-        layout.addSpacing(32)
+        layout.addSpacing(24)
 
-        # ── "Done!" title ─────────────────────────────────────────────
+        #  Title
         done_lbl = QLabel("Done!")
         done_lbl.setAlignment(Qt.AlignCenter)
-        done_lbl.setFont(QFont("", 32, QFont.Bold))
-        done_lbl.setStyleSheet(f"color: {TEXT_D}; background: transparent; border: none;")
+        done_lbl.setFont(QFont(APP_FONT, 32, QFont.Bold))
+        done_lbl.setStyleSheet(
+            f"color: {TEXT_D}; background: transparent; border: none;"
+        )
         layout.addWidget(done_lbl)
         layout.addSpacing(12)
 
-        # ── Subtitle ─────────────────────────────────────────────────
-        self.sub_lbl = QLabel("Акаунт успішно створено!\nВітаємо на борту 🎉")
+        # Subtitle
+        self.sub_lbl = QLabel("")
         self.sub_lbl.setAlignment(Qt.AlignCenter)
         self.sub_lbl.setWordWrap(True)
-        self.sub_lbl.setFont(QFont("", 15))
-        self.sub_lbl.setStyleSheet(f"color: {TEXT_M}; background: transparent; border: none; line-height: 1.6;")
+        self.sub_lbl.setFont(QFont(APP_FONT, 15))
+        self.sub_lbl.setStyleSheet(
+            f"color: {TEXT_M}; background: transparent; border: none;"
+        )
         layout.addWidget(self.sub_lbl)
-        layout.addSpacing(48)
+        layout.addSpacing(32)
 
-        # ── Continue button ───────────────────────────────────────────
-        cont_btn = QPushButton("Перейти на головну →")
-        cont_btn.setFixedHeight(56)
-        cont_btn.setStyleSheet(ORANGE)
-        cont_btn.setCursor(Qt.PointingHandCursor)
+        # Continue button
+        cont_btn = PrimaryButton("Go to the home page")
         cont_btn.clicked.connect(self.go_home)
         layout.addWidget(cont_btn)
 
         layout.addStretch()
 
-    def set_name(self, name: str):
-        self.sub_lbl.setText(f"Вітаємо, {name}!\nАкаунт успішно створено 🎉")
+    def set_name(self, name):
+        self.sub_lbl.setText(
+            f"Congratulations, {name}!\nYour account has been created successfully"
+        )
