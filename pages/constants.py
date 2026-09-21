@@ -1,11 +1,19 @@
-BG       = "#F5F5F5"
-WHITE    = "#FFFFFF"
-ORANGE   = "#FF6B1A"
-ORANGE_L = "#FF8C42"
-GREEN    = "#4CAF50"
-GREEN_L  = "#E8F5E9"
-TEXT_D   = "#1A1A1A"
-TEXT_M   = "#666666"
-TEXT_L   = "#AAAAAA"
-BORDER   = "#E8E8E8"
+import platform
 
+BG = "#F5F5F5"
+WHITE = "#FFFFFF"
+ORANGE = "#FF6B1A"
+ORANGE_L = "#FF8C42"
+GREEN = "#4CAF50"
+GREEN_L = "#E8F5E9"
+TEXT_D = "#1A1A1A"
+TEXT_M = "#666666"
+TEXT_L = "#AAAAAA"
+BORDER = "#E8E8E8"
+
+if platform.system() == "Windows":
+    APP_FONT = "Segoe UI"
+elif platform.system() == "Darwin":
+    APP_FONT = "Helvetica Neue"
+else:
+    APP_FONT = "Arial"
