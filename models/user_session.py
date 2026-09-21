@@ -186,19 +186,22 @@ def mark_habit_done(email, habit_id):
         raise UserNotFoundError()
 
     today = get_today()
+    newly_marked = False
 
     for habit in users[email]["habits"]:
-        if habit.get("id") == habit_id:
-            if today not in habit["done_date"]:
-                habit["done_date"].append(today)
+        if habit.get("id") == habit_id and today not in habit["done_date"]:
+            habit["done_date"].append(today)
+            newly_marked = True
 
-    for goal in users[email]["goals"]:
-        if goal.get("habit_id") == habit_id and not goal.get("done"):
-            goal["done_count"] += 1
-            goal["progress"] = round(goal["done_count"] / goal["total_days"], 2)
-            if goal["done_count"] >= goal["total_days"]:
-                goal["done"] = True
-                goal["finished"] = today
+    # Advance the goal only if today was actually recorded above
+    if newly_marked:
+        for goal in users[email]["goals"]:
+            if goal.get("habit_id") == habit_id and not goal.get("done"):
+                goal["done_count"] += 1
+                goal["progress"] = round(goal["done_count"] / goal["total_days"], 2)
+                if goal["done_count"] >= goal["total_days"]:
+                    goal["done"] = True
+                    goal["finished"] = today
 
     save_users(users)
 
@@ -213,18 +216,21 @@ def mark_habit_undone(email, habit_id):
         raise UserNotFoundError()
 
     today = get_today()
+    was_marked = False
 
     for habit in users[email]["habits"]:
-        if habit.get("id") == habit_id:
-            if today in habit["done_date"]:
-                habit["done_date"].remove(today)
+        if habit.get("id") == habit_id and today in habit["done_date"]:
+            habit["done_date"].remove(today)
+            was_marked = True
 
-    for goal in users[email]["goals"]:
-        if goal.get("habit_id") == habit_id and goal.get("done_count", 0) > 0:
-            goal["done_count"] -= 1
-            goal["progress"] = round(goal["done_count"] / goal["total_days"], 2)
-            goal["done"] = False
-            goal["finished"] = ""
+    # Roll the goal back only if today's completion was actually removed above
+    if was_marked:
+        for goal in users[email]["goals"]:
+            if goal.get("habit_id") == habit_id and goal.get("done_count", 0) > 0:
+                goal["done_count"] -= 1
+                goal["progress"] = round(goal["done_count"] / goal["total_days"], 2)
+                goal["done"] = False
+                goal["finished"] = ""
 
     save_users(users)
 
