@@ -1,0 +1,31 @@
+# User data — never commit real user data or sessions
+users.json
+session.json
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# IDE and assistant data
+.vscode/
+.idea/
+.refact/
+*.swp
+
+# Logs
+*.log
+
+# Distribution
+dist/
+build/
+*.egg-info/
