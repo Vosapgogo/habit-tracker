@@ -29,3 +29,6 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# One-off installer script
+get-pip.py

@@ -2,6 +2,8 @@
 
 A standalone Python desktop application for creating and tracking habits and goals. Built with PySide6, designed with a mobile-first layout (390×780), and stores all data locally in JSON files — no internet connection required.
 
+*Developed in May–June 2026 as a university project; published to GitHub in September 2026.*
+
 ---
 
 ## Screenshots
@@ -73,8 +75,9 @@ A standalone Python desktop application for creating and tracking habits and goa
 ## Installation
 
 ```bash
-# 1. Move to the correct folder
-cd s35633_projekt
+# 1. Clone the repository and move into it
+git clone https://github.com/Vosapgogo/habit-tracker.git
+cd habit-tracker
 
 # 2. Create and activate a virtual environment
 python3 -m venv venv
